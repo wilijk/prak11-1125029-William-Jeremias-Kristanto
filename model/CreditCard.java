@@ -75,8 +75,8 @@ public class CreditCard implements PaymentStrategy{
     }
  
     @Override 
-    public List<AuthorizationMethod> getRequiredAuthorizations(){
-        return List.of(AuthorizationMethod.CCV, AuthorizationMethod.PIN);
+    public List<AuthorizationStrategy> getRequiredAuthorizations(){
+        return List.of(new CcvAuthorization(), new PinAuthorization());
     } 
 
     @Override 

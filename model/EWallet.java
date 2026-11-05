@@ -33,8 +33,8 @@ public class EWallet implements PaymentStrategy {
     }
 
     @Override
-    public List<AuthorizationMethod> getRequiredAuthorizations() {
-        return List.of(AuthorizationMethod.PIN, AuthorizationMethod.OTP);
+    public List<AuthorizationStrategy> getRequiredAuthorizations() {
+        return List.of(new PinAuthorization(), new OtpAuthorization());
     }
 
     @Override
