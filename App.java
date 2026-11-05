@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 import model.CreditCard;
 import model.DebitCard;
+import model.EWallet;
 import model.PaymentProcessor;
 import model.PaymentStrategy;
 import model.Wallet;
@@ -13,13 +14,11 @@ public class App {
         Scanner sc = new Scanner(System.in);
         PaymentProcessor processor = new PaymentProcessor();
 
-
         ArrayList<PaymentStrategy> paymentMethods = new ArrayList<>();
 
         paymentMethods.add(new Wallet("tabungan1", 10000));
         paymentMethods.add(new DebitCard("123456789", 100000, "123456"));
         paymentMethods.add(new CreditCard("987654321", 1000000, "431", "64321"));
-
 
         while (true) {
             System.out.println("-- Cafe Menu --");
@@ -46,13 +45,15 @@ public class App {
                                 detail = "Debit Card: " + ((DebitCard) strategy).getCardNumber();
                             } else if (strategy instanceof CreditCard) {
                                 detail = "Credit Card: " + ((CreditCard) strategy).getCardNumber();
+                            } else if (strategy instanceof EWallet) {
+                                detail = "E-Wallet: " + ((EWallet) strategy).getPhoneNumber();
                             }
 
                             System.out.println((methodTersedia.size()) + ". " + detail);
                         }
                     }
 
-                   if (methodTersedia.isEmpty()) {
+                    if (methodTersedia.isEmpty()) {
                         System.out.println("gak ada metode pembayaran yang memenuhi batasan transaksi!");
                         break;
                     }
@@ -75,6 +76,8 @@ public class App {
                     System.out.println("1. Wallet");
                     System.out.println("2. Debit Card");
                     System.out.println("3. Credit Card");
+                    System.out.println("4. E-Wallet");
+                    System.out.print("pilih: ");
                     int pilihTP = sc.nextInt();
 
                     switch (pilihTP) {
@@ -121,8 +124,22 @@ public class App {
                             System.out.println("Berhasil didaftarkan!");
                             break;
 
+                        case 4:
+                            sc.nextLine();
+                            System.out.print("Masukan nomor HP E-Wallet: ");
+                            String noHp = sc.nextLine();
+
+                            System.out.print("Masukan saldo awal E-Wallet: ");
+                            double saldoEW = sc.nextDouble();
+                            
+                            sc.nextLine();
+                            System.out.print("Masukan PIN E-Wallet: ");
+                            String pinEW = sc.nextLine();
+
+                            paymentMethods.add(new EWallet(noHp, saldoEW, pinEW));
+                            System.out.println("Berhasil didaftarkan!");
+                            
                         default:
-                            System.out.println("Tidak ditemukan!");
                             break;
                     }
                     break;

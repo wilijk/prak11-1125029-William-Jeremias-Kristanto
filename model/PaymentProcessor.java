@@ -36,6 +36,14 @@ public class PaymentProcessor {
                         throw new AuthorizationException("CCV salah!");
                     }
                     break;
+
+                case OTP:
+                    System.out.print("Masukkan OTP Anda: ");
+                    String otp = scanner.nextLine();
+                    if (otp.trim().isEmpty()) {
+                        throw new AuthorizationException("OTP tidak boleh kosong!");
+                    }
+                    break;
                     
                 default:
                     break;
