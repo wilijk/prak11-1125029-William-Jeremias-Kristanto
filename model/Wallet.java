@@ -2,7 +2,7 @@ package model;
 
 import java.util.List;
 
-public class Wallet implements PaymentStrategy{
+public class Wallet implements PaymentStrategy {
     private String name;
     private double cashValue;
 
@@ -27,12 +27,12 @@ public class Wallet implements PaymentStrategy{
         this.cashValue = cashValue;
     }
 
-    @Override 
+    @Override
     public boolean validate(double amount) {
         return cashValue >= amount;
     }
 
-    @Override 
+    @Override
     public void pay(double amount) {
         if (validate(amount)) {
             cashValue -= amount;
@@ -43,10 +43,14 @@ public class Wallet implements PaymentStrategy{
         }
     }
 
-    @Override 
-    public List<AuthorizationMethod> getRequiredAuthorizations(){
+    @Override
+    public List<AuthorizationMethod> getRequiredAuthorizations() {
         return List.of();
     }
 
+    @Override
+    public boolean canPay(double amount) {
+        return amount >= 100 && amount <= 1000000;
+    }
 
 }

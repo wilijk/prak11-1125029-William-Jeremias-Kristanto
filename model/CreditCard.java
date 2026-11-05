@@ -78,5 +78,10 @@ public class CreditCard implements PaymentStrategy{
     public List<AuthorizationMethod> getRequiredAuthorizations(){
         return List.of(AuthorizationMethod.CCV, AuthorizationMethod.PIN);
     } 
+
+    @Override 
+    public boolean canPay(double amount){
+        return amount >= 100000 && amount <= 100000000;
+    }
 }
 

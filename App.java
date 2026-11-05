@@ -3,25 +3,23 @@ import java.util.Scanner;
 
 import model.CreditCard;
 import model.DebitCard;
+import model.PaymentProcessor;
+import model.PaymentStrategy;
 import model.Wallet;
-
 
 public class App {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
+        PaymentProcessor processor = new PaymentProcessor();
 
-        ArrayList<Wallet> lWallets = new ArrayList<>();
-        ArrayList<DebitCard> lDebitCards = new ArrayList<>();
-        ArrayList<CreditCard> lCreditCards = new ArrayList<>();
 
-        Wallet tabungan = new Wallet("tabungan1", 10000);
-        DebitCard debitCard = new DebitCard("123456789", 100000, "123456");
-        CreditCard creditCard = new CreditCard("987654321", 1000000, "431", "64321");
+        ArrayList<PaymentStrategy> paymentMethods = new ArrayList<>();
 
-        lWallets.add(tabungan);
-        lDebitCards.add(debitCard);
-        lCreditCards.add(creditCard);
+        paymentMethods.add(new Wallet("tabungan1", 10000));
+        paymentMethods.add(new DebitCard("123456789", 100000, "123456"));
+        paymentMethods.add(new CreditCard("987654321", 1000000, "431", "64321"));
+
 
         while (true) {
             System.out.println("-- Cafe Menu --");
@@ -34,48 +32,43 @@ public class App {
                 case 1:
                     System.out.print("Masukan jumlah yang dibayar: ");
                     double dibayar = sc.nextDouble();
+
+                    ArrayList<PaymentStrategy> methodTersedia = new ArrayList<>();
                     System.out.println("Pilih dari daftar metode pembayaran yang tersedia: ");
-                    int count = 0;
-                    for (int i = 0; i < lWallets.size(); i++) {
-                        System.out.println((count + 1) + ". Cash: " + lWallets.get(i).getName());
-                        count++;
+                    for (PaymentStrategy strategy : paymentMethods) {
+                        if (strategy.canPay(dibayar)) {
+                            methodTersedia.add(strategy);
+
+                            String detail = "";
+                            if (strategy instanceof Wallet) {
+                                detail = "Cash: " + ((Wallet) strategy).getName();
+                            } else if (strategy instanceof DebitCard) {
+                                detail = "Debit Card: " + ((DebitCard) strategy).getCardNumber();
+                            } else if (strategy instanceof CreditCard) {
+                                detail = "Credit Card: " + ((CreditCard) strategy).getCardNumber();
+                            }
+
+                            System.out.println((methodTersedia.size()) + ". " + detail);
+                        }
                     }
-                    for (int i = 0; i < lDebitCards.size(); i++) {
-                        System.out.println((count + 1) + ". Debit Card: " + lDebitCards.get(i).getCardNumber());
-                        count++;
-                    }
-                    for (int i = 0; i < lCreditCards.size(); i++) {
-                        System.out.println((count + 1) + ". Credit Card: " + lCreditCards.get(i).getCardNumber());
-                        count++;
+
+                   if (methodTersedia.isEmpty()) {
+                        System.out.println("gak ada metode pembayaran yang memenuhi batasan transaksi!");
+                        break;
                     }
                     System.out.print("Pilih: ");
                     int metodePembayaran = sc.nextInt();
 
-                    int countp = 1;
-                    if (metodePembayaran <= count && metodePembayaran >= 1) {
-
-                        for (Wallet lw : lWallets) {
-                            if (countp == metodePembayaran) {
-                                lw.pay(dibayar);
-                            }
-                            countp++;
-                        }
-                        for (DebitCard dc : lDebitCards) {
-                            if (countp == metodePembayaran) {
-                                dc.pay(dibayar);
-                            }
-                            countp++;
-                        }
-                        for (CreditCard cc : lCreditCards) {
-                            if (countp == metodePembayaran) {
-                                cc.pay(dibayar);
-                            }
-                            countp++;
+                    if (metodePembayaran >= 1 && metodePembayaran <= methodTersedia.size()) {
+                        PaymentStrategy selectedStrategy = methodTersedia.get(metodePembayaran - 1);
+                        try {
+                            processor.processPayment(selectedStrategy, dibayar);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
                         }
                     } else {
                         System.out.println("Tidak ditemukan!");
                     }
-
                     break;
                 case 2:
                     System.out.println("Tambah Pembayaran");
@@ -93,7 +86,7 @@ public class App {
                             System.out.print("Masukan berapa isi walletnya: ");
                             double cashvalue = sc.nextDouble();
 
-                            lWallets.add(new Wallet(namaWallet, cashvalue));
+                            paymentMethods.add(new Wallet(namaWallet, cashvalue));
                             System.out.println("Berhasil didaftarkan!");
                             break;
                         case 2:
@@ -107,7 +100,7 @@ public class App {
                             System.out.print("Masukan card pin: ");
                             String pinDebit = sc.nextLine();
 
-                            lDebitCards.add(new DebitCard(noDebit, saldoDebit, pinDebit));
+                            paymentMethods.add(new DebitCard(noDebit, saldoDebit, pinDebit));
                             System.out.println("Berhasil didaftarkan!");
                             break;
                         case 3:
@@ -124,7 +117,7 @@ public class App {
                             System.out.print("Masukan card pin: ");
                             String pinCredit = sc.nextLine();
 
-                            lCreditCards.add(new CreditCard(noCredit, limitCredit, cvv, pinCredit));
+                            paymentMethods.add(new CreditCard(noCredit, limitCredit, cvv, pinCredit));
                             System.out.println("Berhasil didaftarkan!");
                             break;
 
